@@ -7,7 +7,7 @@ export const surveyOptions = [
   { issue: "Transparansi ORMAWA", votes: 25 },
 ];
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.env.POSTGRES_URL;
 const pool = connectionString
   ? new Pool({
       connectionString,
