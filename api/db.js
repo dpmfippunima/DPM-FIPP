@@ -8,12 +8,10 @@ export const surveyOptions = [
 ];
 
 const connectionString = process.env.POSTGRES_URL;
+
 const pool = connectionString
   ? new Pool({
       connectionString,
-      ssl: connectionString.includes("sslmode=disable")
-        ? false
-        : { rejectUnauthorized: false },
     })
   : null;
 
@@ -31,7 +29,7 @@ export async function query(text, params = []) {
 
 export async function ensureSchema() {
   if (!schemaPromise) {
-    schemaPromise = createSchema().catch(error => {
+    schemaPromise = createSchema().catch((error) => {
       schemaPromise = null;
       throw error;
     });
@@ -76,16 +74,17 @@ async function createSchema() {
       `insert into survey_votes (issue, votes)
        values ($1, $2)
        on conflict (issue) do nothing`,
-      [option.issue, option.votes]
+      [option.issue, option.votes],
     );
   }
 }
 
 export function sendError(response, error) {
   const statusCode = error.statusCode || 500;
-  const message = statusCode === 500
-    ? error.message || "Server belum siap menerima data."
-    : error.message;
+  const message =
+    statusCode === 500
+      ? error.message || "Server belum siap menerima data."
+      : error.message;
 
   return response.status(statusCode).json({ error: message });
 }
