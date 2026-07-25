@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { createClient } from "@supabase/supabase-js";
 
 export const surveyOptions = [
   { issue: "Fasilitas Kampus", votes: 42 },
@@ -7,84 +7,58 @@ export const surveyOptions = [
   { issue: "Transparansi ORMAWA", votes: 25 },
 ];
 
-const connectionString = process.env.POSTGRES_URL;
+let supabaseClient = null;
 
-const pool = connectionString
-  ? new Pool({
-      connectionString,
-    })
-  : null;
-
-let schemaPromise = null;
-
-export async function query(text, params = []) {
-  if (!pool) {
-    const error = new Error("DATABASE_URL belum diatur di hosting.");
-    error.statusCode = 500;
-    throw error;
+export function getSupabase() {
+  if (supabaseClient) {
+    return supabaseClient;
   }
 
-  return pool.query(text, params);
-}
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-export async function ensureSchema() {
-  if (!schemaPromise) {
-    schemaPromise = createSchema().catch((error) => {
-      schemaPromise = null;
-      throw error;
-    });
-  }
-
-  return schemaPromise;
-}
-
-async function createSchema() {
-  await query(`
-    create table if not exists comments (
-      id serial primary key,
-      discussion text not null,
-      text text not null,
-      created_at timestamptz not null default now()
-    )
-  `);
-
-  await query(`
-    create table if not exists aspirations (
-      id serial primary key,
-      email text not null,
-      name text not null,
-      nim text not null,
-      program_studi text not null,
-      aspiration text not null,
-      status text not null default 'Baru',
-      created_at timestamptz not null default now()
-    )
-  `);
-
-  await query(`
-    create table if not exists survey_votes (
-      issue text primary key,
-      votes integer not null default 0,
-      updated_at timestamptz not null default now()
-    )
-  `);
-
-  for (const option of surveyOptions) {
-    await query(
-      `insert into survey_votes (issue, votes)
-       values ($1, $2)
-       on conflict (issue) do nothing`,
-      [option.issue, option.votes],
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    throw createHttpError(
+      "SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY belum diatur di hosting.",
+      500,
     );
   }
+
+  supabaseClient = createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+
+  return supabaseClient;
+}
+
+export function cleanValue(value) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+export function cleanMultilineValue(value) {
+  return String(value || "").replace(/\r\n/g, "\n").trim();
+}
+
+export function createHttpError(message, statusCode = 500) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
+
+export function throwIfSupabaseError(error, fallbackMessage = "Server belum siap menerima data.") {
+  if (!error) {
+    return;
+  }
+
+  throw createHttpError(error.message || fallbackMessage, 500);
 }
 
 export function sendError(response, error) {
   const statusCode = error.statusCode || 500;
-  const message =
-    statusCode === 500
-      ? error.message || "Server belum siap menerima data."
-      : error.message;
+  const message = error.message || "Server belum siap menerima data.";
 
   return response.status(statusCode).json({ error: message });
 }

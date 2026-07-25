@@ -1,30 +1,41 @@
-import { ensureSchema, query, sendError, surveyOptions } from "./db.js";
+import {
+  cleanValue,
+  createHttpError,
+  getSupabase,
+  sendError,
+  surveyOptions,
+  throwIfSupabaseError,
+} from "./db.js";
 
 export default async function handler(request, response) {
   try {
-    await ensureSchema();
+    const supabase = getSupabase();
 
     if (request.method === "GET") {
-      const counts = await getCounts();
+      const counts = await getCounts(supabase);
       return response.status(200).json({ counts });
     }
 
     if (request.method === "POST") {
-      const vote = String(request.body?.vote || "").trim();
+      const issue = cleanValue(request.body?.issue || request.body?.vote);
 
-      if (!surveyOptions.some(option => option.issue === vote)) {
-        return response.status(400).json({ error: "Pilihan survei tidak valid." });
+      if (!surveyOptions.some((option) => option.issue === issue)) {
+        throw createHttpError("Pilihan survei tidak valid.", 400);
       }
 
-      await query(
-        `update survey_votes
-         set votes = votes + 1, updated_at = now()
-         where issue = $1`,
-        [vote]
-      );
+      const currentVotes = await getCurrentVotes(supabase, issue);
+      const { error } = await supabase
+        .from("survey_votes")
+        .update({
+          votes: currentVotes + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("issue", issue);
 
-      const counts = await getCounts();
-      return response.status(201).json({ selected: vote, counts });
+      throwIfSupabaseError(error, "Suara belum bisa disimpan.");
+
+      const counts = await getCounts(supabase);
+      return response.status(201).json({ selected: issue, counts });
     }
 
     return response.status(405).json({ error: "Method tidak diizinkan." });
@@ -33,11 +44,51 @@ export default async function handler(request, response) {
   }
 }
 
-async function getCounts() {
-  const result = await query(
-    "select issue, votes from survey_votes where issue = any($1) order by issue",
-    [surveyOptions.map(option => option.issue)]
-  );
+async function getCounts(supabase) {
+  await ensureSurveyRows(supabase);
 
-  return result.rows;
+  const { data, error } = await supabase
+    .from("survey_votes")
+    .select("issue, votes, updated_at")
+    .order("issue", { ascending: true });
+
+  throwIfSupabaseError(error, "Data survei belum bisa dimuat.");
+
+  return data || [];
+}
+
+async function getCurrentVotes(supabase, issue) {
+  await ensureSurveyRows(supabase);
+
+  const { data, error } = await supabase
+    .from("survey_votes")
+    .select("votes")
+    .eq("issue", issue)
+    .single();
+
+  throwIfSupabaseError(error, "Data survei belum bisa dimuat.");
+
+  return Number(data?.votes || 0);
+}
+
+async function ensureSurveyRows(supabase) {
+  const { data, error } = await supabase
+    .from("survey_votes")
+    .select("issue")
+    .limit(1);
+
+  throwIfSupabaseError(error, "Data survei belum bisa dimuat.");
+
+  if (data && data.length > 0) {
+    return;
+  }
+
+  const { error: insertError } = await supabase
+    .from("survey_votes")
+    .upsert(surveyOptions, {
+      onConflict: "issue",
+      ignoreDuplicates: true,
+    });
+
+  throwIfSupabaseError(insertError, "Data survei belum bisa dibuat.");
 }

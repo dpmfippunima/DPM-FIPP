@@ -1,49 +1,44 @@
-import { ensureSchema, query, sendError } from "./db.js";
+import {
+  cleanMultilineValue,
+  cleanValue,
+  createHttpError,
+  getSupabase,
+  sendError,
+  throwIfSupabaseError,
+} from "./db.js";
 
 export default async function handler(request, response) {
   try {
-    await ensureSchema();
+    const supabase = getSupabase();
 
     if (request.method !== "POST") {
       return response.status(405).json({ error: "Method tidak diizinkan." });
     }
 
-    const { email, name, nim, programStudi, aspiration } = request.body || {};
+    const { email, name, nim, programStudi, program_studi, aspiration } = request.body || {};
     const payload = {
-      email: cleanValue(email),
-      name: cleanValue(name),
-      nim: cleanValue(nim),
-      programStudi: cleanValue(programStudi),
-      aspiration: cleanMultilineValue(aspiration),
+      email: cleanValue(email).slice(0, 160),
+      name: cleanValue(name).slice(0, 160),
+      nim: cleanValue(nim).slice(0, 80),
+      program_studi: cleanValue(programStudi || program_studi).slice(0, 160),
+      aspiration: cleanMultilineValue(aspiration).slice(0, 3000),
+      status: "Baru",
     };
 
-    if (!payload.email || !payload.name || !payload.nim || !payload.programStudi || !payload.aspiration) {
-      return response.status(400).json({ error: "Data aspirasi belum lengkap." });
+    if (!payload.email || !payload.name || !payload.nim || !payload.program_studi || !payload.aspiration) {
+      throw createHttpError("Data aspirasi belum lengkap.", 400);
     }
 
-    const result = await query(
-      `insert into aspirations (email, name, nim, program_studi, aspiration)
-       values ($1, $2, $3, $4, $5)
-       returning id, created_at`,
-      [
-        payload.email.slice(0, 160),
-        payload.name.slice(0, 160),
-        payload.nim.slice(0, 80),
-        payload.programStudi.slice(0, 160),
-        payload.aspiration.slice(0, 3000),
-      ]
-    );
+    const { data, error } = await supabase
+      .from("aspirations")
+      .insert(payload)
+      .select("id, email, name, nim, program_studi, aspiration, status, created_at")
+      .single();
 
-    return response.status(201).json(result.rows[0]);
+    throwIfSupabaseError(error, "Aspirasi belum bisa disimpan.");
+
+    return response.status(201).json(data);
   } catch (error) {
     return sendError(response, error);
   }
-}
-
-function cleanValue(value) {
-  return String(value || "").replace(/\s+/g, " ").trim();
-}
-
-function cleanMultilineValue(value) {
-  return String(value || "").replace(/\r\n/g, "\n").trim();
 }
