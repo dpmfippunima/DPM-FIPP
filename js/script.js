@@ -202,21 +202,120 @@ function buildDiscussion(box) {
     event.preventDefault();
     const text = cleanText(textarea.value);
     if (!text) return;
-    list.prepend(createComment({ text }, discussionName));
+    async function loadComments(discussionName, list) {
+  try {
+    const response = await fetch(`/api/comments?discussion=${encodeURIComponent(discussionName)}`);
+
+    if (!response.ok) {
+      throw new Error("Gagal memuat komentar.");
+    }
+
+    const comments = await response.json();
+
+    list.innerHTML = "";
+    comments.forEach(comment => {
+      list.appendChild(createComment({ text: comment.text }, discussionName));
+    });
+  } catch (error) {
+    list.innerHTML = "<p>Belum bisa memuat komentar.</p>";
+  }
+}
+
+function buildDiscussion(box) {
+  const discussionName = box.dataset.discussion;
+
+  box.innerHTML = `
+    <form class="discussion-form">
+      <textarea required placeholder="Tulis pesan anonim..."></textarea>
+      <button class="btn btn-primary" type="submit">Kirim Komentar</button>
+    </form>
+    <div class="comment-list"></div>
+  `;
+
+  const form = box.querySelector(".discussion-form");
+  const textarea = box.querySelector("textarea");
+  const list = box.querySelector(".comment-list");
+
+  loadComments(discussionName, list);
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const text = cleanText(textarea.value);
+    if (!text) return;
+
+    try {
+      const response = await fetch("/api/comments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          discussion: discussionName,
+          text,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengirim komentar.");
+      }
+
+      const savedComment = await response.json();
+
+      list.prepend(createComment({ text: savedComment.text }, discussionName));
+      form.reset();
+    } catch (error) {
+      alert("Komentar belum terkirim. Coba lagi nanti.");
+    }
+  });
+};
     form.reset();
   });
 }
 
 document.querySelectorAll(".discussion").forEach(buildDiscussion);
 
+
 const aspirationForm = document.querySelector("#aspiration-form");
+
 if (aspirationForm) {
-  aspirationForm.addEventListener("submit", event => {
+  aspirationForm.addEventListener("submit", async event => {
     event.preventDefault();
-    aspirationForm.querySelector(".form-note").textContent = "Aspirasi tersimpan di tampilan demo. Hubungkan ke database saat website siap dipublikasikan.";
-    aspirationForm.reset();
+
+    const note = aspirationForm.querySelector(".form-note");
+    const formData = new FormData(aspirationForm);
+
+    const payload = {
+      email: formData.get("email"),
+      name: formData.get("name"),
+      nim: formData.get("nim"),
+      programStudi: formData.get("programStudi"),
+      aspiration: formData.get("aspiration"),
+    };
+
+    note.textContent = "Mengirim aspirasi...";
+
+    try {
+      const response = await fetch("/api/aspirations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Gagal mengirim aspirasi.");
+      }
+
+      note.textContent = "Aspirasi berhasil dikirim.";
+      aspirationForm.reset();
+    } catch (error) {
+      note.textContent = "Aspirasi belum terkirim. Coba lagi nanti.";
+    }
   });
 }
+
 
 document.querySelectorAll(".survey button").forEach(button => {
   button.addEventListener("click", () => {
