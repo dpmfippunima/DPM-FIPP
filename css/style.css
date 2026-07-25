@@ -862,6 +862,18 @@ textarea {
   transform: translateY(-2px);
 }
 
+.survey button:disabled {
+  cursor: not-allowed;
+  opacity: .62;
+  transform: none;
+}
+
+.survey button.selected {
+  border-color: var(--black);
+  background: var(--soft);
+  opacity: 1;
+}
+
 .survey span {
   color: var(--black);
   font-size: 1.5rem;

@@ -146,83 +146,88 @@ function buildOrmawaCards() {
   });
 }
 
-function createComment(comment, discussionName, isReply = false) {
+function cleanText(value) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatCommentTime(value) {
+  if (!value) return "Baru saja";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Baru saja";
+
+  return date.toLocaleString("id-ID", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+async function requestJson(url, options) {
+  const response = await fetch(url, options);
+  let data = null;
+
+  try {
+    data = await response.json();
+  } catch (error) {
+    data = null;
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.error || "Permintaan belum berhasil.");
+  }
+
+  return data;
+}
+
+function createComment(comment) {
   const item = document.createElement("div");
-  item.className = isReply ? "comment reply" : "comment";
+  item.className = "comment";
   item.innerHTML = `
     <div class="comment-head">
       <strong>Anonim</strong>
-      <span>Baru saja</span>
+      <span>${escapeHtml(formatCommentTime(comment.created_at))}</span>
     </div>
-    <p>${comment.text}</p>
-    ${isReply ? "" : "<button class='reply-button' type='button'>Balas</button>"}
+    <p>${escapeHtml(comment.text)}</p>
   `;
-
-  if (!isReply) {
-    const replyButton = item.querySelector(".reply-button");
-    replyButton.addEventListener("click", () => {
-      const answer = prompt("Tulis balasan anonim:");
-      if (!answer || !answer.trim()) return;
-      const reply = createComment({ text: cleanText(answer) }, discussionName, true);
-      item.after(reply);
-    });
-  }
 
   return item;
 }
 
-function cleanText(value) {
-  return value.replace(/[<>]/g, "").trim();
+function setCommentMessage(list, message) {
+  list.innerHTML = `<p class="comment-empty">${escapeHtml(message)}</p>`;
 }
 
-function buildDiscussion(box) {
-  const discussionName = box.dataset.discussion;
-  const comments = starterComments[discussionName] || [];
+async function loadComments(discussionName, list) {
+  setCommentMessage(list, "Memuat komentar...");
 
-  box.innerHTML = `
-    <form class="discussion-form">
-      <textarea required placeholder="Tulis pesan anonim..."></textarea>
-      <button class="btn btn-primary" type="submit">Kirim Komentar</button>
-    </form>
-    <div class="comment-list"></div>
-  `;
-
-  const form = box.querySelector(".discussion-form");
-  const textarea = box.querySelector("textarea");
-  const list = box.querySelector(".comment-list");
-
-  comments.forEach(comment => {
-    list.appendChild(createComment(comment, discussionName));
-    comment.replies.forEach(reply => {
-      list.appendChild(createComment({ text: reply }, discussionName, true));
-    });
-  });
-
-  form.addEventListener("submit", event => {
-    event.preventDefault();
-    const text = cleanText(textarea.value);
-    if (!text) return;
-    async function loadComments(discussionName, list) {
   try {
-    const response = await fetch(`/api/comments?discussion=${encodeURIComponent(discussionName)}`);
+    const comments = await requestJson(`/api/comments?discussion=${encodeURIComponent(discussionName)}`);
+    list.innerHTML = "";
 
-    if (!response.ok) {
-      throw new Error("Gagal memuat komentar.");
+    if (!comments.length) {
+      setCommentMessage(list, "Belum ada komentar.");
+      return;
     }
 
-    const comments = await response.json();
-
-    list.innerHTML = "";
     comments.forEach(comment => {
-      list.appendChild(createComment({ text: comment.text }, discussionName));
+      list.appendChild(createComment(comment));
     });
   } catch (error) {
-    list.innerHTML = "<p>Belum bisa memuat komentar.</p>";
+    setCommentMessage(list, error.message || "Belum bisa memuat komentar.");
   }
 }
 
 function buildDiscussion(box) {
-  const discussionName = box.dataset.discussion;
+  const discussionName = box.dataset.discussion || "umum";
 
   box.innerHTML = `
     <form class="discussion-form">
@@ -234,6 +239,7 @@ function buildDiscussion(box) {
 
   const form = box.querySelector(".discussion-form");
   const textarea = box.querySelector("textarea");
+  const button = box.querySelector("button");
   const list = box.querySelector(".comment-list");
 
   loadComments(discussionName, list);
@@ -244,8 +250,11 @@ function buildDiscussion(box) {
     const text = cleanText(textarea.value);
     if (!text) return;
 
+    button.disabled = true;
+    button.textContent = "Mengirim...";
+
     try {
-      const response = await fetch("/api/comments", {
+      const savedComment = await requestJson("/api/comments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -256,20 +265,18 @@ function buildDiscussion(box) {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Gagal mengirim komentar.");
+      if (list.querySelector(".comment-empty")) {
+        list.innerHTML = "";
       }
 
-      const savedComment = await response.json();
-
-      list.prepend(createComment({ text: savedComment.text }, discussionName));
+      list.prepend(createComment(savedComment));
       form.reset();
     } catch (error) {
-      alert("Komentar belum terkirim. Coba lagi nanti.");
+      alert(error.message || "Komentar belum terkirim. Coba lagi nanti.");
+    } finally {
+      button.disabled = false;
+      button.textContent = "Kirim Komentar";
     }
-  });
-};
-    form.reset();
   });
 }
 
@@ -317,11 +324,105 @@ if (aspirationForm) {
 }
 
 
-document.querySelectorAll(".survey button").forEach(button => {
-  button.addEventListener("click", () => {
+const surveyButtons = Array.from(document.querySelectorAll(".survey button"));
+const surveyNote = document.querySelector(".survey-note");
+const surveyStorageKey = "dpm-fipp-survey-vote";
+
+function getStoredSurveyVote() {
+  try {
+    return localStorage.getItem(surveyStorageKey);
+  } catch (error) {
+    return "";
+  }
+}
+
+function setStoredSurveyVote(vote) {
+  try {
+    localStorage.setItem(surveyStorageKey, vote);
+  } catch (error) {
+    return;
+  }
+}
+
+function updateSurveyCounts(counts) {
+  const countMap = new Map((counts || []).map(item => [item.issue, item.votes]));
+
+  surveyButtons.forEach(button => {
     const count = button.querySelector("span");
-    count.textContent = Number(count.textContent) + 1;
-    document.querySelector(".survey-note").textContent = `Terima kasih. Suara untuk isu ${button.dataset.vote} sudah ditambahkan.`;
+    const votes = countMap.get(button.dataset.vote);
+
+    if (Number.isFinite(Number(votes))) {
+      count.textContent = Number(votes);
+    }
+  });
+}
+
+function applySurveyVoteState() {
+  const selectedVote = getStoredSurveyVote();
+  if (!selectedVote) return;
+
+  surveyButtons.forEach(button => {
+    button.disabled = true;
+    button.classList.toggle("selected", button.dataset.vote === selectedVote);
+  });
+
+  if (surveyNote) {
+    surveyNote.textContent = `Kamu sudah memberi suara untuk isu ${selectedVote}.`;
+  }
+}
+
+async function loadSurveyCounts() {
+  if (!surveyButtons.length) return;
+
+  try {
+    const data = await requestJson("/api/survey");
+    updateSurveyCounts(data.counts);
+    applySurveyVoteState();
+  } catch (error) {
+    if (surveyNote) {
+      surveyNote.textContent = error.message || "Survei belum terhubung ke server.";
+    }
+  }
+}
+
+surveyButtons.forEach(button => {
+  button.addEventListener("click", async () => {
+    const vote = button.dataset.vote;
+
+    if (getStoredSurveyVote()) {
+      applySurveyVoteState();
+      return;
+    }
+
+    surveyButtons.forEach(item => {
+      item.disabled = true;
+    });
+
+    if (surveyNote) {
+      surveyNote.textContent = "Mengirim suara...";
+    }
+
+    try {
+      const data = await requestJson("/api/survey", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ vote }),
+      });
+
+      updateSurveyCounts(data.counts);
+      setStoredSurveyVote(vote);
+      applySurveyVoteState();
+    } catch (error) {
+      surveyButtons.forEach(item => {
+        item.disabled = false;
+      });
+
+      if (surveyNote) {
+        surveyNote.textContent = error.message || "Suara belum terkirim. Coba lagi nanti.";
+      }
+    }
   });
 });
 
@@ -344,5 +445,6 @@ topButton.addEventListener("click", () => {
 });
 
 buildOrmawaCards();
+loadSurveyCounts();
 showPage(location.hash.replace("#", "") || "beranda");
 revealVisibleElements();
