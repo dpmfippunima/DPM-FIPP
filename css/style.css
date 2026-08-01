@@ -1,13 +1,13 @@
 :root {
-  --black: rgba(1, 77, 8, 0.653);
+  --green: rgba(1, 77, 8, 0.653);
   --white: #ffffff;
   --ink: #111111;
   --muted: #5d5d5d;
-  --line: rgba(0, 0, 0, .16);
+  --line: rgba(0, 0, 0, 0.16);
   --surface: #c5c4c4;
   --paper: #b8b8b8;
   --soft: #c5c4c4;
-  --shadow: 0 20px 60px rgba(0, 0, 0, .12);
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -41,7 +41,7 @@ textarea {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(255, 255, 255, .94);
+  background: rgba(255, 255, 255, 0.94);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(18px);
 }
@@ -71,7 +71,7 @@ textarea {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--black);
+  background: var(--green);
 }
 
 .brand-mark2 {
@@ -80,9 +80,9 @@ textarea {
   display: grid;
   place-items: center;
   overflow: hidden;
-  border: 2px solid var(--black);
+  border: 2px solid var(--green);
   border-radius: 8px;
-  background: var(--black);
+  background: var(--green);
 }
 
 .brand-mark img,
@@ -91,7 +91,6 @@ textarea {
   height: 100%;
   object-fit: cover;
 }
-
 
 .nav-menu {
   display: flex;
@@ -115,7 +114,7 @@ textarea {
 .nav-item:hover > button,
 .nav-item.open > button,
 .nav-menu .active-link {
-  background: var(--black);
+  background: var(--green);
   color: var(--white);
 }
 
@@ -149,7 +148,7 @@ textarea {
 }
 
 .dropdown a:hover {
-  background: var(--black);
+  background: var(--green);
   color: var(--white);
 }
 
@@ -175,7 +174,7 @@ textarea {
   width: 20px;
   height: 2px;
   margin: 5px auto;
-  background: var(--black);
+  background: var(--green);
 }
 
 .page {
@@ -200,9 +199,13 @@ textarea {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(93, 93, 93, 0.97), rgba(255, 255, 255, 0.441), rgba(0, 0, 0, 0.532)),
-    url("../png/hero-bg.png"),
-    linear-gradient(135deg, var(--white), var(--black));
+    linear-gradient(
+      90deg,
+      rgba(93, 93, 93, 0.97),
+      rgba(255, 255, 255, 0.441),
+      rgba(0, 0, 0, 0.532)
+    ),
+    url("../png/hero-bg.png"), linear-gradient(0deg, var(--white), var(--green));
   background-position: center;
 }
 
@@ -211,7 +214,11 @@ textarea {
   position: absolute;
   inset: auto 0 0;
   height: 30%;
-  background: linear-gradient(0deg, var(--background-color), rgba(16, 19, 24, 0.502));
+  background: linear-gradient(
+    0deg,
+    var(--background-color),
+    rgba(16, 19, 24, 0.502)
+  );
   pointer-events: none;
 }
 
@@ -224,14 +231,14 @@ textarea {
 
 .eyebrow {
   margin: 0 0 10px;
-  color: var(--black);
+  color: var(--green);
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0;
 }
 
 .hero .eyebrow {
-  color: var(--black);
+  color: var(--green);
 }
 
 h1,
@@ -245,7 +252,7 @@ h1 {
   max-width: 860px;
   margin-bottom: 18px;
   font-size: clamp(2.4rem, 7vw, 6rem);
-  line-height: .96;
+  line-height: 0.96;
   letter-spacing: 0;
 }
 
@@ -280,21 +287,21 @@ h2 {
 }
 
 .btn-primary {
-  background: var(--black);
+  background: var(--green);
   color: var(--white);
 }
 
 .btn-light {
-  border-color: var(--black);
-  color: var(--black);
+  border-color: var(--green);
+  color: var(--green);
   background: var(--white);
 }
 
 .btn-dark {
   margin: 6px 8px 0 0;
-  background: var(--black);
+  background: var(--green);
   color: var(--white);
-  border-color: var(--black);
+  border-color: var(--green);
 }
 
 .section,
@@ -352,7 +359,7 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .news-card {
@@ -363,7 +370,9 @@ h2 {
   justify-content: end;
   scroll-snap-align: start;
   cursor: pointer;
-  transition: transform .25s ease, box-shadow .25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .news-card:hover,
@@ -380,18 +389,16 @@ h2 {
 .dashboard span,
 .progress-board span,
 .publication-grid span {
-  color: var(--black);
+  color: var(--green);
   font-weight: 900;
 }
 
-
-
-
-
-
 .berita-1 {
   color: var(--white);
-  background: linear-gradient(135deg, rgba(5, 5, 5, .24), rgba(5, 5, 5, .76)), url("../png/berita1.png"), linear-gradient(135deg, var(--white), var(--black));
+  background:
+    linear-gradient(135deg, rgba(5, 5, 5, 0.24), rgba(5, 5, 5, 0.76)),
+    url("../png/berita1.png"),
+    linear-gradient(135deg, var(--white), var(--green));
   background-size: cover;
   background-position: center;
   border-color: var(--line);
@@ -399,7 +406,10 @@ h2 {
 
 .berita-2 {
   color: var(--white);
-  background: linear-gradient(135deg, rgba(5, 5, 5, .24), rgba(5, 5, 5, .76)), url("../png/berita2.png"), linear-gradient(135deg, var(--white), var(--black));
+  background:
+    linear-gradient(135deg, rgba(5, 5, 5, 0.24), rgba(5, 5, 5, 0.76)),
+    url("../png/berita2.png"),
+    linear-gradient(135deg, var(--white), var(--green));
   background-size: cover;
   background-position: center;
   border-color: var(--line);
@@ -407,7 +417,10 @@ h2 {
 
 .berita-3 {
   color: var(--white);
-  background: linear-gradient(135deg, rgba(5, 5, 5, .24), rgba(5, 5, 5, .76)), url("../png/berita3.png"), linear-gradient(135deg, var(--white), var(--black));
+  background:
+    linear-gradient(135deg, rgba(5, 5, 5, 0.24), rgba(5, 5, 5, 0.76)),
+    url("../png/berita3.png"),
+    linear-gradient(135deg, var(--white), var(--green));
   background-size: cover;
   background-position: center;
   border-color: var(--line);
@@ -415,7 +428,10 @@ h2 {
 
 .berita-4 {
   color: var(--white);
-  background: linear-gradient(135deg, rgba(5, 5, 5, .24), rgba(5, 5, 5, .76)), url("../png/berita4.png"), linear-gradient(135deg, var(--white), var(--black));
+  background:
+    linear-gradient(135deg, rgba(5, 5, 5, 0.24), rgba(5, 5, 5, 0.76)),
+    url("../png/berita4.png"),
+    linear-gradient(135deg, var(--white), var(--green));
   background-size: cover;
   background-position: center;
   border-color: var(--line);
@@ -423,7 +439,10 @@ h2 {
 
 .berita-5 {
   color: var(--white);
-  background: linear-gradient(135deg, rgba(5, 5, 5, .24), rgba(5, 5, 5, .76)), url("../png/berita5.png"), linear-gradient(135deg, var(--white), var(--black));
+  background:
+    linear-gradient(135deg, rgba(5, 5, 5, 0.24), rgba(5, 5, 5, 0.76)),
+    url("../png/berita5.png"),
+    linear-gradient(135deg, var(--white), var(--green));
   background-size: cover;
   background-position: center;
   border-color: var(--line);
@@ -431,12 +450,14 @@ h2 {
 
 .berita-6 {
   color: var(--white);
-  background: linear-gradient(135deg, rgba(5, 5, 5, .24), rgba(5, 5, 5, .76)), url("../png/berita6.png"), linear-gradient(135deg, var(--white), var(--black));
+  background:
+    linear-gradient(135deg, rgba(5, 5, 5, 0.24), rgba(5, 5, 5, 0.76)),
+    url("../png/berita6.png"),
+    linear-gradient(135deg, var(--white), var(--green));
   background-size: cover;
   background-position: center;
   border-color: var(--line);
 }
-
 
 .slide-button,
 .to-top {
@@ -445,7 +466,7 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 50%;
   background: var(--surface);
-  color: var(--black);
+  color: var(--green);
   cursor: pointer;
   font-size: 0;
   font-weight: 900;
@@ -464,7 +485,7 @@ h2 {
   width: 13px;
   height: 3px;
   border-radius: 999px;
-  background: var(--black);
+  background: var(--green);
   transform-origin: center;
 }
 
@@ -528,7 +549,7 @@ h2 {
 
 .meta {
   color: var(--muted);
-  font-size: .95rem;
+  font-size: 0.95rem;
 }
 
 .image-block {
@@ -549,14 +570,14 @@ h2 {
   padding: 12px;
   border-radius: 8px;
   background: var(--soft);
-  color: var(--black);
+  color: var(--green);
   font-weight: 800;
 }
 
 .split,
 .mission {
   display: grid;
-  grid-template-columns: 1.05fr .95fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: 24px;
   align-items: start;
 }
@@ -569,16 +590,16 @@ h2 {
 }
 
 .people-grid h3,
-.ormawa-grid h3{
+.ormawa-grid h3 {
   margin: 6px 0 3px;
   font-size: 1.2rem;
   padding: 0;
 }
 
 .people-grid h4,
-.ormawa-grid h4{
+.ormawa-grid h4 {
   margin: 6px 0 3px;
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: var(--muted);
   font-weight: 800;
 }
@@ -587,7 +608,8 @@ h2 {
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 8px;
-  background: url("../png/logo1.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/logo1.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -596,7 +618,8 @@ h2 {
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 8px;
-  background: url("../png/logo1.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/logo1.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -605,7 +628,8 @@ h2 {
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 8px;
-  background: url("../png/logo1.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/logo1.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -614,7 +638,8 @@ h2 {
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 8px;
-  background: url("../png/logo1.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/logo1.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -623,7 +648,8 @@ h2 {
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 8px;
-  background: url("../png/logo1.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/logo1.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -632,7 +658,8 @@ h2 {
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 8px;
-  background: url("../png/logo1.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/logo1.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -658,7 +685,7 @@ h2 {
 progress {
   width: 100%;
   height: 12px;
-  accent-color: var(--black);
+  accent-color: var(--green);
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -670,18 +697,19 @@ progress::-webkit-progress-bar {
 }
 
 progress::-webkit-progress-value {
-  background: var(--black);
+  background: var(--green);
 }
 
 progress::-moz-progress-bar {
-  background: var(--black);
+  background: var(--green);
 }
-  
+
 .BEM {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/bem.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/bem.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -690,7 +718,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/kprm.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/kprm.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -699,7 +728,9 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/himapsi.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/himapsi.png"),
+    linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -708,7 +739,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/pgsd.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/pgsd.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -717,7 +749,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/bk.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/bk.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -726,7 +759,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/pkh.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/pkh.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -735,7 +769,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/paud.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/paud.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -744,7 +779,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/upk.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/upk.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -753,7 +789,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/btm.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/btm.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -762,7 +799,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/kmk.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/kmk.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -771,7 +809,8 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/mhdi.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/mhdi.png"), linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -780,7 +819,9 @@ progress::-moz-progress-bar {
   width: 100%;
   aspect-ratio: 5 / 5;
   border-radius: 8px;
-  background: url("../png/mapala.png"), linear-gradient(135deg, var(--black), var(--white));
+  background:
+    url("../png/mapala.png"),
+    linear-gradient(135deg, var(--green), var(--white));
   background-size: cover;
   background-position: center;
 }
@@ -809,8 +850,8 @@ textarea {
 
 input:focus,
 textarea:focus {
-  border-color: var(--black);
-  outline: 2px solid rgba(0, 0, 0, .12);
+  border-color: var(--green);
+  outline: 2px solid rgba(0, 0, 0, 0.12);
 }
 
 textarea {
@@ -822,13 +863,15 @@ textarea {
   min-height: 150px;
   margin-bottom: 16px;
   border-radius: 8px;
-  background: url("../png/hero-bg.png"), linear-gradient(135deg, var(--white), var(--black));
+  background:
+    url("../png/hero-bg.png"),
+    linear-gradient(135deg, var(--white), var(--green));
   background-size: cover;
   background-position: center;
 }
 
 .mini-button {
-  background: var(--black);
+  background: var(--green);
   color: var(--white);
 }
 
@@ -851,12 +894,15 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .survey button:hover,
 .survey button:focus-visible {
-  border-color: var(--black);
+  border-color: var(--green);
   background: var(--soft);
   outline: 0;
   transform: translateY(-2px);
@@ -864,24 +910,24 @@ textarea {
 
 .survey button:disabled {
   cursor: not-allowed;
-  opacity: .62;
+  opacity: 0.62;
   transform: none;
 }
 
 .survey button.selected {
-  border-color: var(--black);
+  border-color: var(--green);
   background: var(--soft);
   opacity: 1;
 }
 
 .survey span {
-  color: var(--black);
+  color: var(--green);
   font-size: 1.5rem;
 }
 
 .survey-note,
 .form-note {
-  color: var(--black);
+  color: var(--green);
   font-weight: 800;
 }
 
@@ -893,7 +939,7 @@ textarea {
 
 .archive {
   display: grid;
-  grid-template-columns: .8fr 1.2fr;
+  grid-template-columns: 0.8fr 1.2fr;
   gap: 22px;
 }
 
@@ -908,7 +954,7 @@ textarea {
   padding: 12px;
   border-radius: 8px;
   background: var(--soft);
-  color: var(--black);
+  color: var(--green);
   font-weight: 800;
 }
 
@@ -936,7 +982,7 @@ textarea {
 
 .comment.reply {
   margin-left: 32px;
-  border-left: 4px solid var(--black);
+  border-left: 4px solid var(--green);
 }
 
 .comment-head {
@@ -944,19 +990,19 @@ textarea {
   justify-content: space-between;
   gap: 10px;
   color: var(--muted);
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 
 .reply-button {
   border: 0;
   background: transparent;
-  color: var(--black);
+  color: var(--green);
   cursor: pointer;
   font-weight: 900;
 }
 
 .site-footer {
-  background: var(--black);
+  background: var(--green);
   color: var(--white);
   padding-top: 54px;
 }
@@ -965,7 +1011,7 @@ textarea {
   width: min(1180px, calc(100% - 32px));
   margin: auto;
   display: grid;
-  grid-template-columns: 1.3fr .7fr 1fr;
+  grid-template-columns: 1.3fr 0.7fr 1fr;
   gap: 32px;
 }
 
@@ -982,7 +1028,7 @@ textarea {
 .copyright {
   margin-top: 34px;
   padding: 18px;
-  border-top: 1px solid rgba(255, 255, 255, .18);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
   text-align: center;
 }
 
@@ -994,7 +1040,7 @@ textarea {
   opacity: 0;
   pointer-events: none;
   transform: translateY(12px);
-  transition: .2s ease;
+  transition: 0.2s ease;
 }
 
 .to-top.show {
@@ -1006,7 +1052,7 @@ textarea {
 .reveal {
   opacity: 0;
   transform: translateY(22px);
-  transition: .55s ease;
+  transition: 0.55s ease;
 }
 
 .reveal.visible {
