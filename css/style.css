@@ -206,6 +206,8 @@ textarea {
       rgba(0, 0, 0, 0.532)
     ),
     url("../png/hero-bg.png"), linear-gradient(0deg, var(--white), var(--green));
+  background-repeat: no-repeat;
+  background-size: cover;
   background-position: center;
 }
 
